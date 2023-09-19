@@ -1,6 +1,6 @@
 // Import necessary modules and dependencies
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma'; // Import PrismaModule
+import { PrismaModule, loggingMiddleware } from 'nestjs-prisma'; // Import PrismaModule
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -8,6 +8,9 @@ import { UserModule } from './user/user.module';
   imports: [
     PrismaModule.forRoot({
       isGlobal: true, // Make PrismaModule available globally
+      prismaServiceOptions: {
+        middlewares: [loggingMiddleware()],
+      },
     }),
     UserModule,
   ],

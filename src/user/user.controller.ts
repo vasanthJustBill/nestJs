@@ -4,12 +4,9 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
-  UseFilters,
 } from '@nestjs/common';
 import { UserService } from './user.service'; // Import UserService
 
@@ -35,26 +32,9 @@ export class UserController {
    */
   @Post()
   async create(@Body() data: any) {
-    try {
-      // Attempt to create the user
-      const user = await this.userService.createData(data);
-      return user; // Return the created user if successful
-    } catch (error) {
-      if (error.code === 'P2002' && error.meta && error.meta.target) {
-        // Handle the case where a unique constraint violation occurs (attribute already exists)
-        const attribute = error.meta.target;
-        throw new HttpException(
-          `A user with the same ${attribute} already exists.`,
-          HttpStatus.CONFLICT,
-        );
-      } else {
-        // Handle other errors
-        throw new HttpException(
-          'An error occurred while creating the user.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    const user = await this.userService.createData(data);
+
+    return { user }; // Return the created user if successful
   }
 
   /**
@@ -64,29 +44,9 @@ export class UserController {
    */
   @Get(':id') // Define a route parameter for the user ID
   async findOne(@Param('id') id: string) {
-    try {
-      // Attempt to retrieve the user by ID
-      const user = await this.userService.findOne(id);
-      if (!user) {
-        throw { code: 'P2025' };
-      }
+    const user = await this.userService.findOne(id);
 
-      return user; // Return the retrieved user if found
-    } catch (error) {
-      if (error.code === 'P2025') {
-        // Handle the case where the user with the provided ID doesn't exist
-        throw new HttpException(
-          `User with ID ${id} not found.`,
-          HttpStatus.NOT_FOUND,
-        );
-      } else {
-        // Handle other errors
-        throw new HttpException(
-          'An error occurred while retrieving the user.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    return { user }; // Return the retrieved user if found
   }
 
   /**
@@ -97,26 +57,9 @@ export class UserController {
    */
   @Patch(':id') // Define a route parameter for the user ID
   async update(@Param('id') id: string, @Body() data: any) {
-    try {
-      // Attempt to update the user
-      const updatedUser = await this.userService.update(id, data);
+    const user = await this.userService.update(id, data);
 
-      return updatedUser; // Return the updated user if successful
-    } catch (error) {
-      if (error.code === 'P2025') {
-        // Handle the case where the user with the provided ID doesn't exist
-        throw new HttpException(
-          `User with ID ${id} not found.`,
-          HttpStatus.NOT_FOUND,
-        );
-      } else {
-        // Handle other errors
-        throw new HttpException(
-          'An error occurred while updating the user.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    return { user }; // Return the updated user if successful
   }
 
   /**
@@ -126,26 +69,9 @@ export class UserController {
    */
   @Delete(':id') // Define a route parameter for the user ID
   async delete(@Param('id') id: string) {
-    try {
-      // Attempt to delete the user
-      const deletedUser = await this.userService.delete(id);
+    await this.userService.delete(id);
 
-      // Return a success message or status code (e.g., HTTP 204 No Content)
-      return;
-    } catch (error) {
-      if (error.code === 'P2025') {
-        // Handle the case where the user with the provided ID doesn't exist
-        throw new HttpException(
-          `User with ID ${id} not found.`,
-          HttpStatus.NOT_FOUND,
-        );
-      } else {
-        // Handle other errors
-        throw new HttpException(
-          'An error occurred while deleting the user.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    // Return a success message or status code (e.g., HTTP 204 No Content)
+    return;
   }
 }
