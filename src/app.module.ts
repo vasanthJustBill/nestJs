@@ -1,20 +1,17 @@
+// Import necessary modules and dependencies
 import { Module } from '@nestjs/common';
-import { PrismaModule, providePrismaClientExceptionFilter } from 'nestjs-prisma';
+import { PrismaModule } from 'nestjs-prisma'; // Import PrismaModule
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [PrismaModule.forRoot()],
-  controllers: [],
-  providers: [
-    // register filter here or in main.ts
-    // {
-    //   provide: APP_FILTER,
-    //   useFactory: ({ httpAdapter }: HttpAdapterHost) => {
-    //     return new PrismaClientExceptionFilter(httpAdapter);
-    //   },
-    //   inject: [HttpAdapterHost],
-    // },
-    // or
-    providePrismaClientExceptionFilter()
+  // Import the PrismaModule and configure it as global
+  imports: [
+    PrismaModule.forRoot({
+      isGlobal: true, // Make PrismaModule available globally
+    }),
+    UserModule,
   ],
+  controllers: [],
+  providers: [],
 })
-export class AppModule {}
+export class AppModule {} // Define the AppModule class
